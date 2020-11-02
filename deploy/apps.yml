@@ -1,0 +1,563 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: registry
+    version: v1
+  name: registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: registry
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_SERVICE_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-registry
+          imagePullPolicy: IfNotPresent
+          name: registry
+          ports:
+            - name: http
+              containerPort: 8761
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: registry
+  name: registry
+spec:
+  ports:
+    - name: http
+      port: 8761
+      protocol: TCP
+      targetPort: 8761
+  selector:
+    app: registry
+  sessionAffinity: None
+  type: ClusterIP
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: config
+    version: v1
+  name: config
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: config
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_SERVICE_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-config
+          imagePullPolicy: IfNotPresent
+          name: config
+          ports:
+            - name: http
+              containerPort: 8888
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: config
+  name: config
+spec:
+  ports:
+    - name: http
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+  selector:
+    app: config
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: account-service
+    version: v1
+  name: account-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-service
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: account-service
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: ACCOUNT_SERVICE_PASSWORD
+              value: password
+            - name: CONFIG_SERVICE_PASSWORD
+              value: password
+            - name: MONGODB_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-account-service
+          imagePullPolicy: IfNotPresent
+          name: account-service
+          ports:
+            - name: http
+              containerPort: 6000
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: account-service
+  name: account-service
+spec:
+  ports:
+    - name: http
+      port: 6000
+      protocol: TCP
+      targetPort: 6000
+  selector:
+    app: account-service
+  sessionAffinity: None
+  type: ClusterIP
+  clusterIP: None
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: auth-service
+    version: v1
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: auth-service
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: ACCOUNT_SERVICE_PASSWORD
+              value: password
+            - name: CONFIG_SERVICE_PASSWORD
+              value: password
+            - name: MONGODB_PASSWORD
+              value: password
+            - name: NOTIFICATION_SERVICE_PASSWORD
+              value: password
+            - name: STATISTICS_SERVICE_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-auth-service
+          imagePullPolicy: IfNotPresent
+          name: auth-service
+          ports:
+          - name: http
+            protocol: TCP
+            containerPort: 5000
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: auth-service
+  name: auth-service
+spec:
+  ports:
+    - name: http
+      port: 5000
+      protocol: TCP
+      targetPort: 5000
+  selector:
+    app: auth-service
+  sessionAffinity: None
+  type: ClusterIP
+  clusterIP: None
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gateway
+    version: v1
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: gateway
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_SERVICE_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-gateway
+          imagePullPolicy: IfNotPresent
+          name: gateway
+          ports:
+            - containerPort: 4000
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: gateway
+  name: gateway
+spec:
+  ports:
+    - name: http
+      port: 4000
+      protocol: TCP
+      targetPort: 4000
+  selector:
+    app: gateway
+  sessionAffinity: None
+  type: ClusterIP
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: notification-service
+    version: v1
+  name: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+      version: v1 
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: notification-service
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_SERVICE_PASSWORD
+              value: password
+            - name: MONGODB_PASSWORD
+              value: password
+            - name: NOTIFICATION_SERVICE_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-notification-service
+          imagePullPolicy: IfNotPresent
+          name: notification-service
+          ports:
+          - name: http
+            containerPort: 8000
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: notification-service
+  name: notification-service
+spec:
+  ports:
+    - name: http
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    app: notification-service
+  sessionAffinity: None
+  type: ClusterIP
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: turbine-stream-service
+    version: v1
+  name: turbine-stream-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: turbine-stream-service
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: turbine-stream-service
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_SERVICE_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-turbine-stream-service
+          imagePullPolicy: IfNotPresent
+          name: turbine-stream-service
+          ports:
+            - containerPort: 8989
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: turbine-stream-service
+  name: turbine-stream-service
+spec:
+  ports:
+    - name: http
+      port: 8989
+      protocol: TCP
+      targetPort: 8989
+  selector:
+    app: turbine-stream-service
+  sessionAffinity: None
+  type: ClusterIP
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: statistics-service
+    version: v1
+  name: statistics-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: statistics-service
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: statistics-service
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_SERVICE_PASSWORD
+              value: password
+            - name: MONGODB_PASSWORD
+              value: password
+            - name: STATISTICS_SERVICE_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-statistics-service
+          imagePullPolicy: IfNotPresent
+          name: statistics-service
+          ports:
+          - name: http
+            protocol: TCP
+            containerPort: 7000
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: statistics-service
+  name: statistics-service
+spec:
+  ports:
+    - name: http
+      port: 7000
+      protocol: TCP
+      targetPort: 7000
+  selector:
+    app: statistics-service
+  sessionAffinity: None
+  type: ClusterIP
+  clusterIP: None
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: monitoring
+    version: v1
+  name: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitoring
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: monitoring
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_SERVICE_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-monitoring
+          imagePullPolicy: IfNotPresent
+          name: monitoring
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: monitoring
+  name: monitoring
+spec:
+  ports:
+    - name: http
+      port: 9000
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: monitoring
+  sessionAffinity: None
+  type: ClusterIP
+  

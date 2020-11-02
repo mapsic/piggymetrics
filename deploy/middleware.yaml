@@ -1,0 +1,232 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    sidecar.istio.io/inject: "false"  
+  labels:
+    app: account-mongodb
+    version: v1
+  name: account-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-mongodb
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"  
+      labels:
+        app: account-mongodb
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: INIT_DUMP
+              value: account-service-dump.js
+            - name: MONGODB_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-mongodb
+          imagePullPolicy: IfNotPresent
+          name: account-mongodb
+          ports:
+            - name: http
+              containerPort: 27017
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: account-mongodb
+  name: account-mongodb
+spec:
+  ports:
+    - name: http
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+  selector:
+    app: account-mongodb
+  sessionAffinity: None
+  type: ClusterIP
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    sidecar.istio.io/inject: "false"  
+  labels:
+    app: mongodb
+    version: v1
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb  
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"  
+      labels:
+        app: mongodb
+        version: v1
+    spec:
+      containers:
+        - env:
+            - name: MONGODB_PASSWORD
+              value: password
+          image: sqshq/piggymetrics-mongodb
+          imagePullPolicy: IfNotPresent
+          name: mongodb
+          ports:
+          - name: http
+            containerPort: 27017
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mongodb
+  name: auth-mongodb
+spec:
+  ports:
+    - name: http
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+  selector:
+    app: mongodb
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mongodb
+  name: notification-mongodb
+spec:
+  ports:
+    - name: http
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+  selector:
+    app: mongodb
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mongodb
+  name: statistics-mongodb
+spec:
+  ports:
+    - name: http
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+  selector:
+    app: mongodb
+  sessionAffinity: None
+  type: ClusterIP
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    sidecar.istio.io/inject: "false"  
+  labels:
+    app: rabbitmq
+    version: v1
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"  
+      labels:
+        app: rabbitmq
+        version: v1
+    spec:
+      containers:
+        - image: rabbitmq:3-management
+          imagePullPolicy: IfNotPresent
+          name: rabbitmq
+          ports:
+            - name: ui
+              containerPort: 15672
+              protocol: TCP
+            - name: http
+              containerPort: 5672
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: rabbitmq
+  name: rabbitmq
+spec:
+  ports:
+    - name: ui
+      port: 15672
+      protocol: TCP
+      targetPort: 15672
+    - name: http
+      port: 5672
+      protocol: TCP
+      targetPort: 5672
+  selector:
+    app: rabbitmq
+  sessionAffinity: None
+  type: ClusterIP
