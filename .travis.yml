@@ -10,13 +10,14 @@ jdk: oraclejdk8
 env:
   global:
     - COMMIT=${TRAVIS_COMMIT::7}
+    - TAG=v2.0
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
 
   #TAG
-  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "v1.0"; else echo $TRAVIS_BRANCH ; fi`
+  # - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "v1.0"; else echo $TRAVIS_BRANCH ; fi`
 
   # CONFIG SERVICE
   - export CONFIG=mapsic/piggymetrics-config
@@ -67,13 +68,13 @@ after_success:
   - docker push $MONITORING
 
   # TURBINE STREAM SERVICE
-  - export TURBINE=sqshq/piggymetrics-turbine-stream-service
+  - export TURBINE=mapsic/piggymetrics-turbine-stream-service
   - docker build -t $TURBINE:$COMMIT ./turbine-stream-service
   - docker tag $TURBINE:$COMMIT $TURBINE:$TAG
   - docker push $TURBINE
 
   # MONGO DB
-  - export MONGO_DB=sqshq/piggymetrics-mongodb
+  - export MONGO_DB=mapsic/piggymetrics-mongodb
   - docker build -t $MONGO_DB:$COMMIT ./mongodb
   - docker tag $MONGO_DB:$COMMIT $MONGO_DB:$TAG
   - docker push $MONGO_DB
