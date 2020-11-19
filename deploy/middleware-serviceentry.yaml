@@ -1,0 +1,59 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: account-mongodb
+spec:
+  hosts:
+  - account-mongodb
+  ports:
+  - number: 27017
+    name: tcp
+    protocol: TCP
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: auth-mongodb
+spec:
+  hosts:
+  - auth-mongodb
+  ports:
+  - number: 27017
+    name: tcp
+    protocol: TCP
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: notification-mongodb
+spec:
+  hosts:
+  - notification-mongodb
+  ports:
+  - number: 27017
+    name: tcp
+    protocol: TCP
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: statistics-mongodb
+spec:
+  hosts:
+  - statistics-mongodb
+  ports:
+  - number: 27017
+    name: tcp
+    protocol: TCP
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: rabbitmq
+spec:
+  hosts:
+  - rabbitmq
+  ports:
+  - number: 5672
+    name: tcp
+    protocol: TCP

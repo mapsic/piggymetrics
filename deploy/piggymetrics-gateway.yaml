@@ -21,3 +21,75 @@ spec:
       credentialName: mapsic-cn
     hosts:
     - "piggymetrics-ops.mapsic.cn"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: registry-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "registry-ops.mapsic.cn"
+  - port:
+      number: 443
+      name: https 
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: mapsic-cn
+    hosts:
+    - "registry-ops.mapsic.cn"
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: hystrix-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "hystrix-ops.mapsic.cn"
+  - port:
+      number: 443
+      name: https 
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: mapsic-cn
+    hosts:
+    - "hystrix-ops.mapsic.cn"
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: rabbitmq-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "rabbitmq-ops.mapsic.cn"
+  - port:
+      number: 443
+      name: https 
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: mapsic-cn
+    hosts:
+    - "rabbitmq-ops.mapsic.cn"

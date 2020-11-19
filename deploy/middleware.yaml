@@ -33,7 +33,7 @@ spec:
               value: account-service-dump.js
             - name: MONGODB_PASSWORD
               value: password
-          image: sqshq/piggymetrics-mongodb
+          image: mapsic/piggymetrics-mongodb:v2.0
           imagePullPolicy: IfNotPresent
           name: account-mongodb
           ports:
@@ -97,7 +97,7 @@ spec:
         - env:
             - name: MONGODB_PASSWORD
               value: password
-          image: sqshq/piggymetrics-mongodb
+          image: mapsic/piggymetrics-mongodb:v2.0
           imagePullPolicy: IfNotPresent
           name: mongodb
           ports:

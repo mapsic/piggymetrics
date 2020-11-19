@@ -96,3 +96,58 @@ spec:
   - name: v1 
     labels:
       version: v1  
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: account-mongodb
+spec:
+  host: account-mongodb
+  subsets:
+  - name: v1 
+    labels:
+      version: v1  
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: auth-mongodb
+spec:
+  host: auth-mongodb
+  subsets:
+  - name: v1 
+    labels:
+      version: v1  
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: notification-mongodb
+spec:
+  host: notification-mongodb
+  subsets:
+  - name: v1 
+    labels:
+      version: v1  
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: statistics-mongodb
+spec:
+  host: statistics-mongodb
+  subsets:
+  - name: v1 
+    labels:
+      version: v1  
+--- 
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: rabbitmq
+spec:
+  host: rabbitmq
+  subsets:
+  - name: v1 
+    labels:
+      version: v1  

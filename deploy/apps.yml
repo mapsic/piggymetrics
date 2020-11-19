@@ -27,7 +27,7 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-          image: sqshq/piggymetrics-registry
+          image: mapsic/piggymetrics-registry:v2.0
           imagePullPolicy: IfNotPresent
           name: registry
           ports:
@@ -87,7 +87,7 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-          image: sqshq/piggymetrics-config
+          image: mapsic/piggymetrics-config:v2.0
           imagePullPolicy: IfNotPresent
           name: config
           ports:
@@ -151,7 +151,7 @@ spec:
               value: password
             - name: MONGODB_PASSWORD
               value: password
-          image: sqshq/piggymetrics-account-service
+          image: mapsic/piggymetrics-account-service:v2.0
           imagePullPolicy: IfNotPresent
           name: account-service
           ports:
@@ -220,7 +220,7 @@ spec:
               value: password
             - name: STATISTICS_SERVICE_PASSWORD
               value: password
-          image: sqshq/piggymetrics-auth-service
+          image: mapsic/piggymetrics-auth-service:v2.2
           imagePullPolicy: IfNotPresent
           name: auth-service
           ports:
@@ -281,7 +281,7 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-          image: sqshq/piggymetrics-gateway
+          image: mapsic/piggymetrics-gateway:v2.0
           imagePullPolicy: IfNotPresent
           name: gateway
           ports:
@@ -344,7 +344,7 @@ spec:
               value: password
             - name: NOTIFICATION_SERVICE_PASSWORD
               value: password
-          image: sqshq/piggymetrics-notification-service
+          image: mapsic/piggymetrics-notification-service:v2.0
           imagePullPolicy: IfNotPresent
           name: notification-service
           ports:
@@ -405,11 +405,11 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-          image: sqshq/piggymetrics-turbine-stream-service
+          image: mapsic/piggymetrics-turbine-stream-service:v2.0
           imagePullPolicy: IfNotPresent
           name: turbine-stream-service
           ports:
-            - containerPort: 8989
+            - containerPort: 8080
               protocol: TCP
           resources:
             requests:
@@ -428,9 +428,9 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8989
+      port: 8080
       protocol: TCP
-      targetPort: 8989
+      targetPort: 8080
   selector:
     app: turbine-stream-service
   sessionAffinity: None
@@ -469,7 +469,7 @@ spec:
               value: password
             - name: STATISTICS_SERVICE_PASSWORD
               value: password
-          image: sqshq/piggymetrics-statistics-service
+          image: mapsic/piggymetrics-statistics-service:v2.0
           imagePullPolicy: IfNotPresent
           name: statistics-service
           ports:
@@ -530,7 +530,7 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-          image: sqshq/piggymetrics-monitoring
+          image: mapsic/piggymetrics-monitoring:v2.0
           imagePullPolicy: IfNotPresent
           name: monitoring
           ports:
