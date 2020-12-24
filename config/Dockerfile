@@ -1,9 +1,13 @@
-FROM java:8-jre
-MAINTAINER Alexander Lukyanchikov <sqshq@sqshq.com>
+FROM openjdk:8u212-jre-alpine
+
+LABEL maintainer="amkcmd@gmail.com"
 
 ADD ./target/config.jar /app/
-CMD ["java", "-Xmx1g", "-jar", "/app/config.jar"]
 
-HEALTHCHECK --interval=30s --timeout=30s CMD curl -f http://localhost:8888/actuator/health || exit 1
+ENV JAVA_OPTS="-server -Xms512m -Xmx512m"
+
+VOLUME /tmp 
 
 EXPOSE 8888
+
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar /app/config.jar"]

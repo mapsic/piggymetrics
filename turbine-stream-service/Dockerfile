@@ -1,7 +1,13 @@
-FROM java:8-jre
-MAINTAINER Chi Dov <d.chiproeng@gmail.com>
+FROM openjdk:8u212-jre-alpine
+
+LABEL maintainer="amkcmd@gmail.com"
 
 ADD ./target/turbine-stream-service.jar /app/
-CMD ["java", "-Xmx1g", "-jar", "/app/turbine-stream-service.jar"]
+
+ENV JAVA_OPTS="-server -Xms512m -Xmx512m"
+
+VOLUME /tmp 
 
 EXPOSE 8989
+
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar /app/turbine-stream-service.jar"]

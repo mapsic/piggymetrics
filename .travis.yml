@@ -10,7 +10,7 @@ jdk: oraclejdk8
 env:
   global:
     - COMMIT=${TRAVIS_COMMIT::7}
-    - TAG=v2.0
+    - TAG=v3.0
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
