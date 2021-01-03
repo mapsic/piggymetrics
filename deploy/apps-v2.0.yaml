@@ -27,9 +27,7 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-            - name: JAVA_OPTS
-              value: "-server -Xms1g -Xmx1g"
-          image: mapsic/piggymetrics-registry:v3.1
+          image: mapsic/piggymetrics-registry:v2.0
           imagePullPolicy: IfNotPresent
           name: registry
           ports:
@@ -43,16 +41,6 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp
-              subPath: tmp/registry
-          securityContext:
-            readOnlyRootFilesystem: false
-      volumes:
-        - name: tmp
-          persistentVolumeClaim:
-            claimName: piggymetrics-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -70,7 +58,7 @@ spec:
     app: registry
   sessionAffinity: None
   type: ClusterIP
----
+--- 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -99,9 +87,7 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-            - name: JAVA_OPTS
-              value: "-server -Xms1g -Xmx1g"
-          image: mapsic/piggymetrics-config:v3.1
+          image: mapsic/piggymetrics-config:v2.0
           imagePullPolicy: IfNotPresent
           name: config
           ports:
@@ -115,17 +101,7 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp
-              subPath: tmp/config
-          securityContext:
-            readOnlyRootFilesystem: false
-      volumes:
-        - name: tmp
-          persistentVolumeClaim:
-            claimName: piggymetrics-pvc     
----
+--- 
 apiVersion: v1
 kind: Service
 metadata:
@@ -175,9 +151,7 @@ spec:
               value: password
             - name: MONGODB_PASSWORD
               value: password
-            - name: JAVA_OPTS
-              value: "-server -Xms1g -Xmx1g"
-          image: mapsic/piggymetrics-account-service:v3.1
+          image: mapsic/piggymetrics-account-service:v2.0
           imagePullPolicy: IfNotPresent
           name: account-service
           ports:
@@ -191,17 +165,7 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp
-              subPath: tmp/account-service
-          securityContext:
-            readOnlyRootFilesystem: false
-      volumes:
-        - name: tmp
-          persistentVolumeClaim:
-            claimName: piggymetrics-pvc
----
+--- 
 apiVersion: v1
 kind: Service
 metadata:
@@ -219,7 +183,7 @@ spec:
   sessionAffinity: None
   type: ClusterIP
   clusterIP: None
----
+--- 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -235,8 +199,8 @@ spec:
       version: v1
   strategy:
     rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
+      maxSurge: 1
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
@@ -256,15 +220,13 @@ spec:
               value: password
             - name: STATISTICS_SERVICE_PASSWORD
               value: password
-            - name: JAVA_OPTS
-              value: "-server -Xms1g -Xmx1g"
-          image: mapsic/piggymetrics-auth-service:v3.1
+          image: mapsic/piggymetrics-auth-service:v2.0
           imagePullPolicy: IfNotPresent
           name: auth-service
           ports:
-            - name: http
-              protocol: TCP
-              containerPort: 5000
+          - name: http
+            protocol: TCP
+            containerPort: 5000
           resources:
             requests:
               cpu: 500m
@@ -272,17 +234,7 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp
-              subPath: tmp/auth-service
-          securityContext:
-            readOnlyRootFilesystem: false
-      volumes:
-        - name: tmp
-          persistentVolumeClaim:
-            claimName: piggymetrics-pvc
----
+--- 
 apiVersion: v1
 kind: Service
 metadata:
@@ -300,7 +252,7 @@ spec:
   sessionAffinity: None
   type: ClusterIP
   clusterIP: None
----
+--- 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -329,9 +281,7 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-            - name: JAVA_OPTS
-              value: "-server -Xms1g -Xmx1g"
-          image: mapsic/piggymetrics-gateway:v3.1
+          image: mapsic/piggymetrics-gateway:v2.0
           imagePullPolicy: IfNotPresent
           name: gateway
           ports:
@@ -344,17 +294,7 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp
-              subPath: tmp/gateway
-          securityContext:
-            readOnlyRootFilesystem: false
-      volumes:
-        - name: tmp
-          persistentVolumeClaim:
-            claimName: piggymetrics-pvc
----
+--- 
 apiVersion: v1
 kind: Service
 metadata:
@@ -371,7 +311,7 @@ spec:
     app: gateway
   sessionAffinity: None
   type: ClusterIP
----
+--- 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -384,7 +324,7 @@ spec:
   selector:
     matchLabels:
       app: notification-service
-      version: v1
+      version: v1 
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -404,15 +344,13 @@ spec:
               value: password
             - name: NOTIFICATION_SERVICE_PASSWORD
               value: password
-            - name: JAVA_OPTS
-              value: "-server -Xms1g -Xmx1g"
-          image: mapsic/piggymetrics-notification-service:v3.1
+          image: mapsic/piggymetrics-notification-service:v2.0
           imagePullPolicy: IfNotPresent
           name: notification-service
           ports:
-            - name: http
-              containerPort: 8000
-              protocol: TCP
+          - name: http
+            containerPort: 8000
+            protocol: TCP
           resources:
             requests:
               cpu: 500m
@@ -420,16 +358,6 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp
-              subPath: tmp/notification-service
-          securityContext:
-            readOnlyRootFilesystem: false
-      volumes:
-        - name: tmp
-          persistentVolumeClaim:
-            claimName: piggymetrics-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -477,9 +405,7 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-            - name: JAVA_OPTS
-              value: "-server -Xms1g -Xmx1g"
-          image: mapsic/piggymetrics-turbine-stream-service:v3.1
+          image: mapsic/piggymetrics-turbine-stream-service:v2.0
           imagePullPolicy: IfNotPresent
           name: turbine-stream-service
           ports:
@@ -492,17 +418,7 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp
-              subPath: tmp/turbine-stream-service
-          securityContext:
-            readOnlyRootFilesystem: false
-      volumes:
-        - name: tmp
-          persistentVolumeClaim:
-            claimName: piggymetrics-pvc
----
+--- 
 apiVersion: v1
 kind: Service
 metadata:
@@ -553,15 +469,13 @@ spec:
               value: password
             - name: STATISTICS_SERVICE_PASSWORD
               value: password
-            - name: JAVA_OPTS
-              value: "-server -Xms1g -Xmx1g"
-          image: mapsic/piggymetrics-statistics-service:v3.1
+          image: mapsic/piggymetrics-statistics-service:v2.0
           imagePullPolicy: IfNotPresent
           name: statistics-service
           ports:
-            - name: http
-              protocol: TCP
-              containerPort: 7000
+          - name: http
+            protocol: TCP
+            containerPort: 7000
           resources:
             requests:
               cpu: 500m
@@ -569,16 +483,6 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp
-              subPath: tmp/statistics-service
-          securityContext:
-            readOnlyRootFilesystem: false
-      volumes:
-        - name: tmp
-          persistentVolumeClaim:
-            claimName: piggymetrics-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -597,7 +501,7 @@ spec:
   sessionAffinity: None
   type: ClusterIP
   clusterIP: None
----
+--- 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -626,9 +530,7 @@ spec:
         - env:
             - name: CONFIG_SERVICE_PASSWORD
               value: password
-            - name: JAVA_OPTS
-              value: "-server -Xms1g -Xmx1g"
-          image: mapsic/piggymetrics-monitoring:v3.1
+          image: mapsic/piggymetrics-monitoring:v2.0
           imagePullPolicy: IfNotPresent
           name: monitoring
           ports:
@@ -641,17 +543,7 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp
-              subPath: tmp/monitoring
-          securityContext:
-            readOnlyRootFilesystem: false
-      volumes:
-        - name: tmp
-          persistentVolumeClaim:
-            claimName: piggymetrics-pvc
----
+--- 
 apiVersion: v1
 kind: Service
 metadata:
